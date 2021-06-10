@@ -1,0 +1,2 @@
+elif [[ "<%= subcommand %>" == "$prv2" ]]; then
+    COMPREPLY=($(compgen -W "<%= (org[command][subcommand].options.keys.map{|option| "--#{option}"}).join(" ") %>" -- "$cur"))

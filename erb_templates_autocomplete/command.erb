@@ -1,0 +1,12 @@
+_kernel_<%= command %> ()
+{
+  local prv="$(__kernelcomp_prev)"
+  local prv2="$(__kernelcomp_prev2)"
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  if [[ "$prv" == "<%= command %>" ]]; then
+    COMPREPLY=($(compgen -W "<%= org[command].keys.join(" ") %>" -- "$cur"))
+  <%= subcommand_join %>
+  else
+    COMPREPLY=()
+  fi
+}

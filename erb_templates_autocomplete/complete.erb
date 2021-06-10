@@ -1,0 +1,74 @@
+#/usr/bin/env bash
+
+# Find the previous non-switch word
+__kernelcomp_prev() {
+  local idx="$((COMP_CWORD - 1))"
+  local prv="${COMP_WORDS[idx]}"
+  while [[ "$prv" = -* ]]
+  do
+    (( idx-- ))
+    prv="${COMP_WORDS[idx]}"
+  done
+  echo "$prv"
+}
+
+# Find the previous to previous non-switch word
+__kernelcomp_prev2() {
+  local idx="$((COMP_CWORD - 2))"
+  local prv="${COMP_WORDS[idx]}"
+  while [[ "$prv" = -* ]]
+  do
+    (( idx-- ))
+    prv="${COMP_WORDS[idx]}"
+  done
+  echo "$prv"
+}
+
+__kernel_complete_commands() 
+{
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  #TODO: Implement kernel command to get all commands
+  COMPREPLY=($(compgen -W "actor alpha application cluster component config help login service version" -- "$cur"))
+}
+
+<%= command_join %>
+
+_kernel()
+{
+  local i=1 cmd
+
+  # find the subcommand
+  while [[ "$i" -lt "$COMP_CWORD" ]]
+  do
+    local s="${COMP_WORDS[i]}"
+    case "$s" in
+      --*)
+        cmd="$s"
+        break
+        ;;
+      -*)
+        ;;
+      *)
+        cmd="$s"
+        break
+        ;;
+    esac
+    (( i++ ))
+  done
+
+  if [[ "$i" -eq "$COMP_CWORD" ]]
+  then
+    __kernel_complete_commands
+    return
+  fi
+
+  # subcommands have their own completion functions
+  case "$cmd" in
+    <%= case_command %>
+    *)                          ;;
+  esac
+
+}
+
+
+complete -F _kernel kernel
